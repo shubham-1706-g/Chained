@@ -132,24 +132,26 @@ export default function CreateFlowPage() {
 
   return (
     <div className="h-screen bg-light-grey overflow-auto" data-testid="create-flow-page">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
-        <div className="flex items-center space-x-4">
+      {/* Header with Back Button */}
+      <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center space-x-6">
           <Link href="/flows">
-            <Button variant="ghost" size="sm" data-testid="button-back-to-flows">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-coral text-coral hover:bg-coral hover:text-white transition-colors"
+              data-testid="button-back-to-flows"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Flows
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-text-dark">Create New Flow</h1>
-            <p className="text-gray-600">Choose a template or start from scratch</p>
+            <h1 className="text-3xl font-bold text-text-dark">Create New Flow</h1>
+            <p className="text-gray-600 text-lg">Choose a template or start from scratch</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" data-testid="button-share">
-            Share
-          </Button>
           <Link href="/flows">
             <Button variant="outline" data-testid="button-cancel-header">
               Cancel

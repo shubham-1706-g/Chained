@@ -37,11 +37,8 @@ function Router() {
             <FlowDashboardPage />
           </MainLayout>
         )} />
-        <Route path="/flows/:id/edit" component={() => (
-          <MainLayout>
-            <WorkflowEditPage />
-          </MainLayout>
-        )} />
+        {/* Workflow editor also without sidebar for focused editing */}
+        <Route path="/flows/:id/edit" component={WorkflowEditPage} />
         <Route path="/connections" component={() => (
           <MainLayout>
             <ConnectionsPage />
