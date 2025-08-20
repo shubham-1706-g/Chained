@@ -188,7 +188,7 @@ export default function WorkflowEditPage() {
   }
 
   return (
-    <div className="h-screen flex font-inter overflow-hidden" data-testid="workflow-edit-page">
+    <div className="h-screen flex font-inter overflow-hidden workflow-canvas" data-testid="workflow-edit-page">
       <WorkflowSidebar
         workflowName={workflow.name}
         executionStatus={executionStatus}

@@ -185,7 +185,7 @@ export function WorkflowCanvas({
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative" style={{ overflow: 'hidden' }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -198,6 +198,13 @@ export function WorkflowCanvas({
           nodeTypes={customNodeTypes}
           fitView
           attributionPosition="bottom-left"
+          preventScrolling={false}
+          panOnScroll={true}
+          selectNodesOnDrag={false}
+          snapToGrid={false}
+          nodesDraggable={true}
+          nodesConnectable={true}
+          elementsSelectable={true}
         >
           <Background 
             variant={BackgroundVariant.Dots} 

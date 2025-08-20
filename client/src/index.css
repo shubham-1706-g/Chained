@@ -117,6 +117,32 @@ body, html {
   transition: none !important;
 }
 
+/* Additional performance optimizations for workflow canvas */
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+/* Optimize scrolling in workflow areas */
+.workflow-canvas,
+.workflow-canvas * {
+  scroll-behavior: auto !important;
+}
+
+/* Smooth node interactions without lag */
+.react-flow__node:hover {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Ensure canvas container doesn't interfere with scrolling */
+.react-flow__container {
+  overflow: hidden;
+}
+
 /* Reduce animations for accessibility */
 @media (prefers-reduced-motion: reduce) {
   * {
