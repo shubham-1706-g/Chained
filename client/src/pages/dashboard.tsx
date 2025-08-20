@@ -25,7 +25,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 bg-light-grey min-h-full" data-testid="dashboard-page">
+    <div className="p-6 bg-light-grey min-h-full overflow-auto" data-testid="dashboard-page">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-dark mb-2">Dashboard</h1>

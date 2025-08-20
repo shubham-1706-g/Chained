@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState("light");
 
   return (
-    <div className="p-6 bg-light-grey min-h-full" data-testid="settings-page">
+    <div className="p-6 bg-light-grey min-h-full overflow-auto" data-testid="settings-page">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-dark mb-2">Settings</h1>

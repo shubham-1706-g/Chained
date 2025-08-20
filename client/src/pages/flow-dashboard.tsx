@@ -44,7 +44,7 @@ export default function FlowDashboardPage() {
   const avgDuration = executions.reduce((acc, e) => acc + e.duration, 0) / executions.length;
 
   return (
-    <div className="p-6 bg-light-grey min-h-full" data-testid="flow-dashboard-page">
+    <div className="p-6 bg-light-grey min-h-full overflow-auto" data-testid="flow-dashboard-page">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
