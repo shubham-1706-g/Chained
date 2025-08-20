@@ -31,7 +31,7 @@ export function SidebarNav() {
               variant="ghost"
               size="sm"
               onClick={toggleSidebar}
-              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8"
+              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8 transition-all duration-200 hover:scale-110 border border-gray-600 hover:border-gray-500"
               data-testid="button-toggle-sidebar"
             >
               <Menu className="w-4 h-4" />
@@ -49,7 +49,7 @@ export function SidebarNav() {
               variant="ghost"
               size="sm"
               onClick={toggleSidebar}
-              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8"
+              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8 transition-all duration-200 hover:scale-110 border border-gray-600 hover:border-gray-500"
               data-testid="button-toggle-sidebar"
             >
               <X className="w-4 h-4" />
@@ -87,11 +87,11 @@ export function SidebarNav() {
                 <Link href={item.href}>
                   <div
                     className={cn(
-                      "flex items-center rounded-lg transition-colors cursor-pointer",
+                      "flex items-center rounded-lg transition-all duration-200 cursor-pointer transform hover:scale-105",
                       isMinimized ? "px-2 py-3 justify-center" : "space-x-3 px-4 py-3",
                       isActive
-                        ? "bg-coral text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                        ? "bg-coral text-white shadow-md"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white hover:shadow-md"
                     )}
                     data-testid={`nav-${item.name.toLowerCase()}`}
                     title={isMinimized ? item.name : undefined}

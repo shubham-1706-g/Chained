@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Play, Pause, Square, Save, FolderOpen, Settings, Share2 } from "lucide-react";
+import { Play, Pause, Square, Save, FolderOpen, Settings, Share2, ArrowLeft, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import { NodeLibrary } from "./node-library";
 import { ExecutionStatus } from "../../types/workflow";
 
@@ -25,13 +26,56 @@ export function WorkflowSidebar({
 }: WorkflowSidebarProps) {
   return (
     <div className="w-80 bg-sidebar-dark text-white flex flex-col shadow-2xl" data-testid="workflow-sidebar">
-      {/* Sidebar Header */}
-      <div className="p-6 border-b border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-coral rounded-lg flex items-center justify-center">
-            <i className="fas fa-project-diagram text-white text-sm"></i>
+      {/* Sidebar Header with Actions */}
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <Link href="/flows">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-coral hover:text-white hover:bg-coral/20 border border-coral/30 transition-all duration-200"
+                data-testid="button-back-to-flows-sidebar"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back
+              </Button>
+            </Link>
+            <div className="w-6 h-6 bg-coral rounded flex items-center justify-center">
+              <Workflow className="w-4 h-4 text-white" />
+            </div>
           </div>
-          <h1 className="text-xl font-semibold">WorkflowHub</h1>
+          <div className="flex items-center space-x-1">
+            <Button 
+              variant="ghost"
+              size="sm"
+              onClick={onSave}
+              className="text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 border border-gray-600"
+              data-testid="button-save-sidebar"
+            >
+              <Save className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 border border-gray-600"
+              data-testid="button-settings-sidebar"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 border border-gray-600"
+              data-testid="button-share-sidebar"
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+        <div>
+          <h1 className="text-lg font-semibold truncate">{workflowName}</h1>
+          <p className="text-sm text-gray-400">Edit workflow</p>
         </div>
       </div>
       
@@ -39,7 +83,7 @@ export function WorkflowSidebar({
       <div className="p-4 border-b border-gray-700">
         <div className="flex space-x-2 mb-4">
           <Button 
-            className="flex-1 bg-coral hover:bg-red-600 text-white" 
+            className="flex-1 bg-coral hover:bg-red-600 text-white transition-all duration-200 shadow-md hover:shadow-lg" 
             size="sm"
             onClick={onExecute}
             data-testid="button-run-workflow"
@@ -48,7 +92,7 @@ export function WorkflowSidebar({
             Run
           </Button>
           <Button 
-            className="flex-1 bg-gray-600 hover:bg-gray-500 text-white" 
+            className="flex-1 bg-gray-600 hover:bg-gray-500 text-white transition-all duration-200 shadow-md hover:shadow-lg" 
             size="sm"
             onClick={onPause}
             data-testid="button-pause-workflow"

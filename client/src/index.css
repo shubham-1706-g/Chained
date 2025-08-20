@@ -51,6 +51,42 @@
   --sidebar-dark: hsl(210 24% 16%);
 }
 
+/* Global hover transitions and smooth animations */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Enhanced button styles with better borders for light elements */
+.btn-outline-light {
+  @apply border-2 border-gray-300 bg-white text-gray-700 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200;
+}
+
+/* Switch/Toggle enhanced styles */
+[data-state="checked"] {
+  @apply border-coral;
+}
+
+[data-state="unchecked"] {
+  @apply border-2 border-gray-300;
+}
+
+/* Input and form element enhancements */
+.form-control, input, select, textarea {
+  @apply border-2 border-gray-200 focus:border-coral transition-all duration-200;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-lg hover:scale-[1.02];
+}
+
+/* Button hover enhancements */
+.btn-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-95;
+}
+
 .dark {
   --background: hsl(0 0% 0%);
   --foreground: hsl(200 6.6667% 91.1765%);

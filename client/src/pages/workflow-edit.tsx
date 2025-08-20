@@ -188,63 +188,24 @@ export default function WorkflowEditPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col font-inter" data-testid="workflow-edit-page">
-      {/* Header with Back Button */}
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-sm z-10">
-        <div className="flex items-center space-x-4">
-          <Link href="/flows">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-coral text-coral hover:bg-coral hover:text-white transition-colors"
-              data-testid="button-back-to-flows-edit"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Flows
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-text-dark">{workflow.name}</h1>
-            <p className="text-gray-600">Edit workflow</p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button 
-            variant="outline"
-            onClick={handleSave}
-            disabled={saveWorkflowMutation.isPending}
-            data-testid="button-save-workflow-header"
-          >
-            Save
-          </Button>
-          <Link href={`/flows/${workflow.id}/dashboard`}>
-            <Button variant="outline" data-testid="button-view-dashboard">
-              View Dashboard
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        <WorkflowSidebar
-          workflowName={workflow.name}
-          executionStatus={executionStatus}
-          onExecute={handleExecute}
-          onPause={handlePause}
-          onStop={handleStop}
-          onSave={handleSave}
-          onLoad={handleLoad}
-        />
-        
-        <WorkflowCanvas
-          workflowName={workflow.name}
-          initialNodes={workflowNodes}
-          initialEdges={workflowEdges}
-          onNodesChange={handleNodesChange}
-          onEdgesChange={handleEdgesChange}
-        />
-      </div>
+    <div className="h-screen flex font-inter" data-testid="workflow-edit-page">
+      <WorkflowSidebar
+        workflowName={workflow.name}
+        executionStatus={executionStatus}
+        onExecute={handleExecute}
+        onPause={handlePause}
+        onStop={handleStop}
+        onSave={handleSave}
+        onLoad={handleLoad}
+      />
+      
+      <WorkflowCanvas
+        workflowName={workflow.name}
+        initialNodes={workflowNodes}
+        initialEdges={workflowEdges}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
+      />
     </div>
   );
 }
