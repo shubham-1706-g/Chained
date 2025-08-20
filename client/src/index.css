@@ -51,11 +51,21 @@
   --sidebar-dark: hsl(210 24% 16%);
 }
 
-/* Global hover transitions and smooth animations */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+/* Global hover transitions and smooth animations - only for interactive elements */
+button, a, .card, input, textarea, select, [role="button"], [tabindex] {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 200ms;
+}
+
+/* Reduce animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Enhanced button styles with better borders for light elements */

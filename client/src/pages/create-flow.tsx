@@ -160,11 +160,10 @@ export default function CreateFlowPage() {
         </div>
       </div>
 
-      <div className="p-6">
-
-      <div className="max-w-4xl space-y-6">
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="space-y-6">
         {/* Flow Details */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <CardTitle>Flow Details</CardTitle>
             <CardDescription>Give your workflow a name and description</CardDescription>
@@ -177,6 +176,7 @@ export default function CreateFlowPage() {
                 placeholder="Enter flow name..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="border-2 border-gray-200 focus:border-coral transition-colors duration-200"
                 data-testid="input-flow-name"
               />
             </div>
@@ -187,6 +187,7 @@ export default function CreateFlowPage() {
                 placeholder="Describe what this workflow does..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="border-2 border-gray-200 focus:border-coral transition-colors duration-200"
                 data-testid="textarea-flow-description"
               />
             </div>
@@ -194,7 +195,7 @@ export default function CreateFlowPage() {
         </Card>
 
         {/* Template Selection */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <CardTitle>Choose a Template</CardTitle>
             <CardDescription>Select a starting point for your workflow</CardDescription>
@@ -208,20 +209,20 @@ export default function CreateFlowPage() {
                 return (
                   <Card 
                     key={template.id}
-                    className={`cursor-pointer transition-all ${
+                    className={`group cursor-pointer transition-all duration-200 transform hover:scale-105 ${
                       isSelected 
-                        ? 'ring-2 ring-coral border-coral shadow-md' 
-                        : 'hover:shadow-md border-dashed border-2 border-gray-300'
+                        ? 'ring-2 ring-coral border-coral shadow-lg bg-coral/5' 
+                        : 'hover:shadow-lg border-2 border-gray-300 hover:border-coral/50 bg-white hover:bg-gray-50'
                     }`}
                     onClick={() => setSelectedTemplate(template.id)}
                     data-testid={`template-${template.id}`}
                   >
                     <CardContent className="pt-6">
                       <div className="text-center">
-                        <div className={`w-12 h-12 ${template.color} rounded-lg flex items-center justify-center mx-auto mb-3`}>
+                        <div className={`w-12 h-12 ${template.color} rounded-lg flex items-center justify-center mx-auto mb-3 transition-transform duration-200 ${isSelected ? 'scale-110' : ''}`}>
                           <template.icon className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="font-semibold text-text-dark mb-1">{template.name}</h3>
+                        <h3 className={`font-semibold mb-1 transition-colors duration-200 ${isSelected ? 'text-coral' : 'text-text-dark'}`}>{template.name}</h3>
                         <p className="text-sm text-gray-500">{template.description}</p>
                       </div>
                     </CardContent>
@@ -243,12 +244,16 @@ export default function CreateFlowPage() {
           </div>
           <div className="flex space-x-3">
             <Link href="/flows">
-              <Button variant="outline" data-testid="button-cancel">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-cancel"
+              >
                 Cancel
               </Button>
             </Link>
             <Button 
-              className="bg-coral hover:bg-red-600 text-white"
+              className="bg-coral hover:bg-red-600 text-white transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg"
               onClick={handleCreateFlow}
               disabled={!name.trim() || createWorkflowMutation.isPending}
               data-testid="button-create-flow"
@@ -257,7 +262,7 @@ export default function CreateFlowPage() {
             </Button>
           </div>
         </div>
-      </div>
+        </div>
       </div>
     </div>
   );
