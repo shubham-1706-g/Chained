@@ -157,6 +157,27 @@ body, html {
   cursor: grabbing !important;
 }
 
+/* Node content should not trigger drag */
+.react-flow__node .nodrag {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.react-flow__node .nodrag:hover {
+  cursor: pointer;
+}
+
+/* Only the drag handle should allow dragging */
+.react-flow__node .drag-handle {
+  cursor: move;
+  pointer-events: all;
+}
+
+.react-flow__node .drag-handle:hover {
+  cursor: move;
+  background: rgba(255, 109, 90, 0.1) !important;
+}
+
 /* Ensure node handles are easily clickable */
 .react-flow__handle {
   cursor: crosshair;

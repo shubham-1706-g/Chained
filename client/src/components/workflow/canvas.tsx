@@ -205,9 +205,10 @@ export function WorkflowCanvas({
           nodesDraggable={true}
           nodesConnectable={true}
           elementsSelectable={true}
-          nodeDragThreshold={10}
+          nodeDragThreshold={5}
           multiSelectionKeyCode={null}
           deleteKeyCode={null}
+          onlyRenderVisibleElements={false}
         >
           <Background 
             variant={BackgroundVariant.Dots} 
