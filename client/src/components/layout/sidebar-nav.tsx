@@ -21,24 +21,41 @@ export function SidebarNav() {
       isMinimized ? "w-16" : "w-64"
     )} data-testid="sidebar-nav">
       {/* Brand Header */}
-      <div className="p-6 border-b border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+      <div className="p-4 border-b border-gray-700">
+        {isMinimized ? (
+          <div className="flex flex-col items-center space-y-3">
             <div className="w-8 h-8 bg-coral rounded-lg flex items-center justify-center">
               <Workflow className="w-5 h-5 text-white" />
             </div>
-            {!isMinimized && <h1 className="text-xl font-semibold">WorkflowHub</h1>}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebar}
+              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8"
+              data-testid="button-toggle-sidebar"
+            >
+              <Menu className="w-4 h-4" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8"
-            data-testid="button-toggle-sidebar"
-          >
-            {isMinimized ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
-          </Button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-coral rounded-lg flex items-center justify-center">
+                <Workflow className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-semibold">WorkflowHub</h1>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebar}
+              className="text-gray-400 hover:text-white hover:bg-gray-700 p-1 h-8 w-8"
+              data-testid="button-toggle-sidebar"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Create Flow Button */}

@@ -19,10 +19,12 @@ function Router() {
     <SidebarProvider>
       <Switch>
         {/* Route without sidebar for create flow */}
-        <Route path="/flows/create" component={CreateFlowPage} />
+        <Route path="/flows/create">
+          <CreateFlowPage />
+        </Route>
         
         {/* Routes with sidebar */}
-        <Route>
+        <Route path="/">
           <MainLayout>
             <Switch>
               <Route path="/" component={DashboardPage} />
