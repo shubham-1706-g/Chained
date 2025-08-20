@@ -82,8 +82,8 @@ export function WorkflowCanvas({
       id: newEdge.id,
       source: newEdge.source,
       target: newEdge.target,
-      sourceHandle: newEdge.sourceHandle,
-      targetHandle: newEdge.targetHandle
+      sourceHandle: newEdge.sourceHandle || undefined,
+      targetHandle: newEdge.targetHandle || undefined
     }];
     onEdgesChange(updatedEdges);
   }, [initialEdges, onEdgesChange, setEdges]);

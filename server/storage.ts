@@ -159,7 +159,8 @@ export class MemStorage implements IStorage {
       ...insertWorkflow,
       id,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      description: insertWorkflow.description || null
     };
     this.workflows.set(id, workflow);
     return workflow;
@@ -172,7 +173,8 @@ export class MemStorage implements IStorage {
     const updatedWorkflow: Workflow = {
       ...workflow,
       ...updateData,
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      description: updateData.description !== undefined ? updateData.description : workflow.description
     };
     this.workflows.set(id, updatedWorkflow);
     return updatedWorkflow;

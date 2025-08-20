@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a workflow automation platform that allows users to create, edit, and execute visual workflows through a drag-and-drop interface. Built with React and Express, it provides a comprehensive solution for building automated workflows with support for triggers, actions, and data transformations. The platform features a visual flow editor similar to tools like Zapier or Microsoft Power Automate, enabling users to connect different services and automate business processes.
+This is a comprehensive workflow automation platform that allows users to create, edit, and execute visual workflows through a drag-and-drop interface. Built with React and Express, it provides a complete solution for building automated workflows with support for triggers, actions, and data transformations. The platform features a visual flow editor similar to tools like n8n, Zapier, or Microsoft Power Automate, enabling users to connect different services and automate business processes.
+
+The platform now includes a complete home screen interface with dashboard, flow management, connections management, and settings pages, providing a full-featured workflow automation experience.
 
 ## User Preferences
 
@@ -31,11 +33,20 @@ Preferred communication style: Simple, everyday language.
 - **Connection**: Neon Database serverless PostgreSQL for cloud deployment
 - **Development Storage**: In-memory storage implementation for rapid prototyping
 
+### Application Structure
+- **Home Dashboard**: Overview with workflow statistics, recent activities, and quick access to flows
+- **Flow Management**: Complete flow listing, creation templates (webhook, schedule, blank), and organization
+- **Flow Dashboard**: Individual flow monitoring with execution history, performance metrics, and controls
+- **Workflow Editor**: ReactFlow-based visual canvas with drag-and-drop node creation and configuration
+- **Connections Manager**: External service integrations and API credential management
+- **Settings Interface**: User preferences, notifications, security, and data management options
+
 ### Component Architecture
+- **MainLayout & Navigation**: Consistent sidebar navigation with active route highlighting
 - **Workflow Canvas**: ReactFlow-based visual editor with custom node types and connection handling
 - **Node Library**: Categorized drag-and-drop node components (triggers, actions, transforms)
 - **Property Panel**: Dynamic configuration interface for workflow nodes
-- **Sidebar Interface**: Workflow controls, execution status, and node library browser
+- **Dashboard Components**: Statistics cards, recent activity feeds, and workflow status indicators
 
 ### External Dependencies
 - **Database**: Neon Database (PostgreSQL) for persistent data storage
