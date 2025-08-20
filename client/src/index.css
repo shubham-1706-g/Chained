@@ -52,7 +52,12 @@
 }
 
 /* Global hover transitions and smooth animations - only for interactive elements */
-button, a, .card, input, textarea, select, [role="button"], [tabindex] {
+button:not(.react-flow__node):not(.react-flow__handle), 
+a:not(.react-flow__node), 
+.card:not(.react-flow__node), 
+input, textarea, select, 
+[role="button"]:not(.react-flow__node), 
+[tabindex]:not(.react-flow__node) {
   transition-property: background-color, border-color, color, box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 200ms;
@@ -84,10 +89,32 @@ body, html {
   will-change: auto;
 }
 
+/* Disable transitions on React Flow elements for better performance */
+.react-flow__node,
+.react-flow__node *,
+.react-flow__handle,
+.react-flow__edge,
+.react-flow__background,
+.react-flow__viewport {
+  transition: none !important;
+  animation: none !important;
+}
+
 /* Improve rendering performance for scrollable areas */
 .overflow-auto, .overflow-scroll {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: auto;
+}
+
+/* Optimize React Flow performance */
+.react-flow__renderer {
+  will-change: transform;
+}
+
+.react-flow__node.dragging,
+.react-flow__node.dragging * {
+  pointer-events: none;
+  transition: none !important;
 }
 
 /* Reduce animations for accessibility */

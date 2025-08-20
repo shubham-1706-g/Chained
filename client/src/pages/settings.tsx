@@ -17,8 +17,9 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState("light");
 
   return (
-    <div className="h-screen bg-light-grey overflow-auto" data-testid="settings-page">
-      {/* Header with Back Button */}
+    <div className="h-screen bg-light-grey" data-testid="settings-page">
+      <div className="h-full overflow-y-auto">
+        {/* Header with Back Button */}
       <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center space-x-6">
           <Link href="/">
@@ -39,9 +40,9 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="p-6 max-w-6xl mx-auto">
-        <div className="space-y-6">
-        {/* Profile Settings */}
+        <div className="p-6 max-w-6xl mx-auto">
+          <div className="space-y-6">
+            {/* Profile Settings */}
         <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
@@ -337,6 +338,7 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+          </div>
         </div>
       </div>
     </div>
