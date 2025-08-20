@@ -131,7 +131,7 @@ export default function CreateFlowPage() {
   };
 
   return (
-    <div className="h-screen bg-light-grey overflow-auto" data-testid="create-flow-page">
+    <div className="h-screen bg-light-grey overflow-auto scroll-smooth" data-testid="create-flow-page">
       {/* Header with Back Button */}
       <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center space-x-6">

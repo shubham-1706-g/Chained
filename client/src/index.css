@@ -58,6 +58,38 @@ button, a, .card, input, textarea, select, [role="button"], [tabindex] {
   transition-duration: 200ms;
 }
 
+/* Optimize scrolling performance */
+* {
+  scroll-behavior: auto;
+}
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Disable smooth scrolling on main containers to improve performance */
+body, html {
+  scroll-behavior: auto;
+}
+
+/* Reduce excessive animations during scroll */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimize transform and transition performance */
+.card-hover, button, a {
+  will-change: auto;
+}
+
+/* Improve rendering performance for scrollable areas */
+.overflow-auto, .overflow-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
+}
+
 /* Reduce animations for accessibility */
 @media (prefers-reduced-motion: reduce) {
   * {

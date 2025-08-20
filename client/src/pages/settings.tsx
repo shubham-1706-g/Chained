@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { User, Bell, Shield, Palette, Download, Upload, Trash2, Key, Globe } from "lucide-react";
+import { User, Bell, Shield, Palette, Download, Upload, Trash2, Key, Globe, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -16,16 +17,32 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState("light");
 
   return (
-    <div className="p-6 bg-light-grey min-h-full overflow-auto" data-testid="settings-page">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-dark mb-2">Settings</h1>
-        <p className="text-gray-600">Manage your account and application preferences</p>
+    <div className="h-screen bg-light-grey overflow-auto" data-testid="settings-page">
+      {/* Header with Back Button */}
+      <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center space-x-6">
+          <Link href="/">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-coral text-coral hover:bg-coral hover:text-white transition-colors"
+              data-testid="button-back-to-dashboard"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-text-dark">Settings</h1>
+            <p className="text-gray-600 text-lg">Manage your account and application preferences</p>
+          </div>
+        </div>
       </div>
 
-      <div className="max-w-4xl space-y-6">
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="space-y-6">
         {/* Profile Settings */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <User className="w-5 h-5 text-coral" />
@@ -40,6 +57,7 @@ export default function SettingsPage() {
                 <Input
                   id="full-name"
                   defaultValue="John Doe"
+                  className="border-2 border-gray-200 focus:border-coral transition-colors duration-200"
                   data-testid="input-full-name"
                 />
               </div>
@@ -49,6 +67,7 @@ export default function SettingsPage() {
                   id="email"
                   type="email"
                   defaultValue="john.doe@example.com"
+                  className="border-2 border-gray-200 focus:border-coral transition-colors duration-200"
                   data-testid="input-email"
                 />
               </div>
@@ -58,17 +77,21 @@ export default function SettingsPage() {
               <Input
                 id="company"
                 defaultValue="Acme Corp"
+                className="border-2 border-gray-200 focus:border-coral transition-colors duration-200"
                 data-testid="input-company"
               />
             </div>
-            <Button className="bg-coral hover:bg-red-600" data-testid="button-save-profile">
+            <Button 
+              className="bg-coral hover:bg-red-600 text-white transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg" 
+              data-testid="button-save-profile"
+            >
               Save Changes
             </Button>
           </CardContent>
         </Card>
 
         {/* Notification Settings */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Bell className="w-5 h-5 text-coral" />
@@ -119,7 +142,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Workflow Settings */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Globe className="w-5 h-5 text-coral" />
@@ -171,7 +194,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Appearance Settings */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Palette className="w-5 h-5 text-coral" />
@@ -210,7 +233,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Security Settings */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Shield className="w-5 h-5 text-coral" />
@@ -224,7 +247,11 @@ export default function SettingsPage() {
                 <h4 className="font-medium">Change Password</h4>
                 <p className="text-sm text-gray-500">Update your account password</p>
               </div>
-              <Button variant="outline" data-testid="button-change-password">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-change-password"
+              >
                 Change Password
               </Button>
             </div>
@@ -233,7 +260,11 @@ export default function SettingsPage() {
                 <h4 className="font-medium">API Keys</h4>
                 <p className="text-sm text-gray-500">Manage API keys for external integrations</p>
               </div>
-              <Button variant="outline" data-testid="button-manage-api-keys">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-manage-api-keys"
+              >
                 <Key className="w-4 h-4 mr-2" />
                 Manage Keys
               </Button>
@@ -244,7 +275,11 @@ export default function SettingsPage() {
                 <p className="text-sm text-gray-500">Add an extra layer of security</p>
                 <Badge variant="outline" className="mt-1">Not Enabled</Badge>
               </div>
-              <Button variant="outline" data-testid="button-setup-2fa">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-setup-2fa"
+              >
                 Setup
               </Button>
             </div>
@@ -252,7 +287,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Data Management */}
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral/30 transition-all duration-200">
           <CardHeader>
             <CardTitle>Data Management</CardTitle>
             <CardDescription>Export, import, or delete your workflow data</CardDescription>
@@ -263,7 +298,11 @@ export default function SettingsPage() {
                 <h4 className="font-medium">Export Workflows</h4>
                 <p className="text-sm text-gray-500">Download all your workflows as JSON</p>
               </div>
-              <Button variant="outline" data-testid="button-export-workflows">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-export-workflows"
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
@@ -273,7 +312,11 @@ export default function SettingsPage() {
                 <h4 className="font-medium">Import Workflows</h4>
                 <p className="text-sm text-gray-500">Upload workflows from a JSON file</p>
               </div>
-              <Button variant="outline" data-testid="button-import-workflows">
+              <Button 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-coral hover:bg-coral hover:text-white transition-all duration-200"
+                data-testid="button-import-workflows"
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 Import
               </Button>
@@ -283,13 +326,18 @@ export default function SettingsPage() {
                 <h4 className="font-medium text-red-700">Delete Account</h4>
                 <p className="text-sm text-red-600">Permanently delete your account and all data</p>
               </div>
-              <Button variant="destructive" data-testid="button-delete-account">
+              <Button 
+                variant="destructive" 
+                className="transition-all duration-200 transform hover:scale-105"
+                data-testid="button-delete-account"
+              >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Account
               </Button>
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
