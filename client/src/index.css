@@ -143,6 +143,26 @@ body, html {
   overflow: hidden;
 }
 
+/* Improve node click detection vs drag behavior */
+.react-flow__node {
+  cursor: pointer;
+  user-select: none;
+}
+
+.react-flow__node:hover {
+  cursor: pointer;
+}
+
+.react-flow__node.dragging {
+  cursor: grabbing !important;
+}
+
+/* Ensure node handles are easily clickable */
+.react-flow__handle {
+  cursor: crosshair;
+  pointer-events: all;
+}
+
 /* Reduce animations for accessibility */
 @media (prefers-reduced-motion: reduce) {
   * {
