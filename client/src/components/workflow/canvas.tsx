@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo } from "react";
 import ReactFlow, {
   addEdge,
   useNodesState,
@@ -10,15 +10,15 @@ import ReactFlow, {
   Node,
   BackgroundVariant,
   Panel,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from "reactflow";
+import "reactflow/dist/style.css";
 
-import { CustomWorkflowNode } from './custom-nodes';
-import { PropertyPanel } from './property-panel';
-import { WorkflowNode, WorkflowEdge } from '@shared/schema';
-import { nodeTypes } from '../../types/workflow';
-import { Settings, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { CustomWorkflowNode } from "./custom-nodes";
+import { PropertyPanel } from "./property-panel";
+import { WorkflowNode, WorkflowEdge } from "@shared/schema";
+import { nodeTypes } from "../../types/workflow";
+import { Settings, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface WorkflowCanvasProps {
   workflowName: string;
@@ -28,31 +28,33 @@ interface WorkflowCanvasProps {
   onEdgesChange: (edges: WorkflowEdge[]) => void;
 }
 
-export function WorkflowCanvas({ 
-  workflowName, 
-  initialNodes, 
+export function WorkflowCanvas({
+  workflowName,
+  initialNodes,
   initialEdges,
   onNodesChange,
-  onEdgesChange 
+  onEdgesChange,
 }: WorkflowCanvasProps) {
   const [nodes, setNodes, onNodesChangeInternal] = useNodesState(
-    initialNodes.map(node => ({
+    initialNodes.map((node) => ({
       id: node.id,
       type: node.type,
-      position: node.position,
-      data: node.data
-    }))
+      position: { x: node.position.x || 0, y: node.position.y || 0 },
+      data: node.data,
+      draggable: true,
+      selectable: true,
+    })),
   );
-  
+
   const [edges, setEdges, onEdgesChangeInternal] = useEdgesState(
-    initialEdges.map(edge => ({
+    initialEdges.map((edge) => ({
       id: edge.id,
       source: edge.source,
       target: edge.target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
-      type: 'smoothstep'
-    }))
+      type: "smoothstep",
+    })),
   );
 
   const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
@@ -61,116 +63,141 @@ export function WorkflowCanvas({
   // Custom node types for React Flow
   const customNodeTypes = useMemo(() => {
     const types: Record<string, React.ComponentType<any>> = {};
-    nodeTypes.forEach(nodeType => {
+    nodeTypes.forEach((nodeType) => {
       types[nodeType.id] = CustomWorkflowNode;
     });
     return types;
   }, []);
 
-  const onConnect = useCallback((params: Connection) => {
-    const newEdge: Edge = {
-      id: `${params.source}-${params.target}`,
-      source: params.source!,
-      target: params.target!,
-      type: 'smoothstep'
-    };
-    
-    setEdges((eds) => addEdge(newEdge, eds));
-    
-    // Update parent component
-    const updatedEdges: WorkflowEdge[] = [...initialEdges, {
-      id: newEdge.id,
-      source: newEdge.source,
-      target: newEdge.target,
-      sourceHandle: newEdge.sourceHandle || undefined,
-      targetHandle: newEdge.targetHandle || undefined
-    }];
-    onEdgesChange(updatedEdges);
-  }, [initialEdges, onEdgesChange, setEdges]);
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const newEdge: Edge = {
+        id: `${params.source}-${params.target}`,
+        source: params.source!,
+        target: params.target!,
+        type: "smoothstep",
+      };
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    const workflowNode = initialNodes.find(n => n.id === node.id);
-    if (workflowNode) {
-      setSelectedNode(workflowNode);
-      setShowPropertyPanel(true);
-    }
-  }, [initialNodes]);
+      setEdges((eds) => addEdge(newEdge, eds));
 
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
+      // Update parent component
+      const updatedEdges: WorkflowEdge[] = [
+        ...initialEdges,
+        {
+          id: newEdge.id,
+          source: newEdge.source,
+          target: newEdge.target,
+          sourceHandle: newEdge.sourceHandle || undefined,
+          targetHandle: newEdge.targetHandle || undefined,
+        },
+      ];
+      onEdgesChange(updatedEdges);
+    },
+    [initialEdges, onEdgesChange, setEdges],
+  );
 
-    const reactFlowBounds = (event.target as Element).getBoundingClientRect();
-    const type = event.dataTransfer.getData('application/reactflow');
-
-    if (typeof type === 'undefined' || !type) {
-      return;
-    }
-
-    const position = {
-      x: event.clientX - reactFlowBounds.left,
-      y: event.clientY - reactFlowBounds.top,
-    };
-
-    const nodeType = nodeTypes.find(n => n.id === type);
-    if (!nodeType) return;
-
-    const newNode: WorkflowNode = {
-      id: `${type}-${Date.now()}`,
-      type,
-      position,
-      data: {
-        label: nodeType.name,
-        description: nodeType.description,
-        category: nodeType.category,
-        config: { ...nodeType.config }
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.stopPropagation();
+      event.preventDefault();
+      const workflowNode = initialNodes.find((n) => n.id === node.id);
+      if (workflowNode) {
+        setSelectedNode(workflowNode);
+        setShowPropertyPanel(true);
       }
-    };
+    },
+    [initialNodes],
+  );
 
-    const reactFlowNode: Node = {
-      id: newNode.id,
-      type: newNode.type,
-      position: newNode.position,
-      data: newNode.data
-    };
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
 
-    setNodes((nds) => nds.concat(reactFlowNode));
-    onNodesChange([...initialNodes, newNode]);
-  }, [initialNodes, onNodesChange, setNodes]);
+      const reactFlowBounds = (event.target as Element).getBoundingClientRect();
+      const type = event.dataTransfer.getData("application/reactflow");
+
+      if (typeof type === "undefined" || !type) {
+        return;
+      }
+
+      const position = {
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      };
+
+      const nodeType = nodeTypes.find((n) => n.id === type);
+      if (!nodeType) return;
+
+      const newNode: WorkflowNode = {
+        id: `${type}-${Date.now()}`,
+        type,
+        position,
+        data: {
+          label: nodeType.name,
+          description: nodeType.description,
+          category: nodeType.category,
+          config: { ...nodeType.config },
+        },
+      };
+
+      const reactFlowNode: Node = {
+        id: newNode.id,
+        type: newNode.type,
+        position: newNode.position,
+        data: newNode.data,
+      };
+
+      setNodes((nds) => nds.concat(reactFlowNode));
+      onNodesChange([...initialNodes, newNode]);
+    },
+    [initialNodes, onNodesChange, setNodes],
+  );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onPropertySave = useCallback((nodeId: string, data: any) => {
-    const updatedNodes = initialNodes.map(node => 
-      node.id === nodeId 
-        ? { ...node, data: { ...node.data, ...data } }
-        : node
-    );
-    
-    setNodes((nds) => nds.map(node =>
-      node.id === nodeId
-        ? { ...node, data: { ...node.data, ...data } }
-        : node
-    ));
-    
-    onNodesChange(updatedNodes);
-  }, [initialNodes, onNodesChange, setNodes]);
+  const onPropertySave = useCallback(
+    (nodeId: string, data: any) => {
+      const updatedNodes = initialNodes.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...data } }
+          : node,
+      );
+
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === nodeId
+            ? { ...node, data: { ...node.data, ...data } }
+            : node,
+        ),
+      );
+
+      onNodesChange(updatedNodes);
+    },
+    [initialNodes, onNodesChange, setNodes],
+  );
 
   return (
-    <div className="flex-1 flex flex-col bg-light-grey" data-testid="workflow-canvas">
+    <div
+      className="flex-1 flex flex-col bg-light-grey"
+      data-testid="workflow-canvas"
+    >
       {/* Top Bar */}
       <div className="bg-white border-b border-border-light p-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-semibold text-text-dark" data-testid="text-workflow-name">
+          <h2
+            className="text-lg font-semibold text-text-dark"
+            data-testid="text-workflow-name"
+          >
             {workflowName}
           </h2>
           <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
             Active
           </span>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <div className="text-sm text-gray-500">
             Auto-save: <span className="text-green-600">On</span>
@@ -185,11 +212,21 @@ export function WorkflowCanvas({
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 relative" style={{ overflow: 'hidden' }}>
+      <div className="flex-1 relative" style={{ overflow: "hidden" }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChangeInternal}
+          onNodesChange={(changes) => {
+            // Filter out unwanted position changes that snap nodes to top-left
+            const filteredChanges = changes.filter(change => {
+              if (change.type === 'position' && change.position) {
+                // Only allow position changes that aren't moving nodes to (0,0)
+                return !(change.position.x === 0 && change.position.y === 0);
+              }
+              return true;
+            });
+            onNodesChangeInternal(filteredChanges);
+          }}
           onEdgesChange={onEdgesChangeInternal}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
@@ -205,18 +242,18 @@ export function WorkflowCanvas({
           nodesDraggable={true}
           nodesConnectable={true}
           elementsSelectable={true}
-          nodeDragThreshold={5}
+          nodeDragThreshold={15}
           multiSelectionKeyCode={null}
           deleteKeyCode={null}
           onlyRenderVisibleElements={false}
         >
-          <Background 
-            variant={BackgroundVariant.Dots} 
-            gap={20} 
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={20}
             size={1}
             color="#E5E7EB"
           />
-          <Controls 
+          <Controls
             className="bg-white border border-border-light shadow-lg"
             data-testid="canvas-controls"
           />
