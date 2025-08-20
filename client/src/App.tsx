@@ -19,24 +19,40 @@ function Router() {
     <SidebarProvider>
       <Switch>
         {/* Route without sidebar for create flow */}
-        <Route path="/flows/create">
-          <CreateFlowPage />
-        </Route>
+        <Route path="/flows/create" component={CreateFlowPage} />
         
         {/* Routes with sidebar */}
-        <Route path="/">
+        <Route path="/" component={() => (
           <MainLayout>
-            <Switch>
-              <Route path="/" component={DashboardPage} />
-              <Route path="/flows" component={FlowsPage} />
-              <Route path="/flows/:id/dashboard" component={FlowDashboardPage} />
-              <Route path="/flows/:id/edit" component={WorkflowEditPage} />
-              <Route path="/connections" component={ConnectionsPage} />
-              <Route path="/settings" component={SettingsPage} />
-              <Route component={NotFound} />
-            </Switch>
+            <DashboardPage />
           </MainLayout>
-        </Route>
+        )} />
+        <Route path="/flows" component={() => (
+          <MainLayout>
+            <FlowsPage />
+          </MainLayout>
+        )} />
+        <Route path="/flows/:id/dashboard" component={() => (
+          <MainLayout>
+            <FlowDashboardPage />
+          </MainLayout>
+        )} />
+        <Route path="/flows/:id/edit" component={() => (
+          <MainLayout>
+            <WorkflowEditPage />
+          </MainLayout>
+        )} />
+        <Route path="/connections" component={() => (
+          <MainLayout>
+            <ConnectionsPage />
+          </MainLayout>
+        )} />
+        <Route path="/settings" component={() => (
+          <MainLayout>
+            <SettingsPage />
+          </MainLayout>
+        )} />
+        <Route component={NotFound} />
       </Switch>
     </SidebarProvider>
   );
