@@ -1,66 +1,48 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useRef } from "react";
 import ReactFlow, {
-  addEdge,
-  useNodesState,
-  useEdgesState,
   Controls,
   Background,
-  Connection,
-  Edge,
-  Node,
   BackgroundVariant,
   Panel,
+  ReactFlowInstance,
+  Node,
+  Edge,
+  OnNodesChange,
+  OnEdgesChange,
+  OnConnect,
+  applyEdgeChanges,
+  applyNodeChanges
 } from "reactflow";
 import "reactflow/dist/style.css";
 
 import { CustomWorkflowNode } from "./custom-nodes";
 import { PropertyPanel } from "./property-panel";
-import { WorkflowNode, WorkflowEdge } from "@shared/schema";
 import { nodeTypes } from "../../types/workflow";
-import { Settings, Share2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { WorkflowNode } from "@shared/schema";
 
 interface WorkflowCanvasProps {
-  workflowName: string;
-  initialNodes: WorkflowNode[];
-  initialEdges: WorkflowEdge[];
-  onNodesChange: (nodes: WorkflowNode[]) => void;
-  onEdgesChange: (edges: WorkflowEdge[]) => void;
+  nodes: Node[];
+  edges: Edge[];
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  onConnect: OnConnect;
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
 }
 
 export function WorkflowCanvas({
-  workflowName,
-  initialNodes,
-  initialEdges,
+  nodes,
+  edges,
   onNodesChange,
   onEdgesChange,
+  onConnect,
+  setNodes,
 }: WorkflowCanvasProps) {
-  const [nodes, setNodes, onNodesChangeInternal] = useNodesState(
-    initialNodes.map((node) => ({
-      id: node.id,
-      type: node.type,
-      position: { x: node.position.x || 0, y: node.position.y || 0 },
-      data: node.data,
-      draggable: true,
-      selectable: true,
-    })),
-  );
-
-  const [edges, setEdges, onEdgesChangeInternal] = useEdgesState(
-    initialEdges.map((edge) => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      sourceHandle: edge.sourceHandle,
-      targetHandle: edge.targetHandle,
-      type: "smoothstep",
-    })),
-  );
-
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
   const [showPropertyPanel, setShowPropertyPanel] = useState(false);
 
-  // Custom node types for React Flow
   const customNodeTypes = useMemo(() => {
     const types: Record<string, React.ComponentType<any>> = {};
     nodeTypes.forEach((nodeType) => {
@@ -69,88 +51,12 @@ export function WorkflowCanvas({
     return types;
   }, []);
 
-  const onConnect = useCallback(
-    (params: Connection) => {
-      const newEdge: Edge = {
-        id: `${params.source}-${params.target}`,
-        source: params.source!,
-        target: params.target!,
-        type: "smoothstep",
-      };
-
-      setEdges((eds) => addEdge(newEdge, eds));
-
-      // Update parent component
-      const updatedEdges: WorkflowEdge[] = [
-        ...initialEdges,
-        {
-          id: newEdge.id,
-          source: newEdge.source,
-          target: newEdge.target,
-          sourceHandle: newEdge.sourceHandle || undefined,
-          targetHandle: newEdge.targetHandle || undefined,
-        },
-      ];
-      onEdgesChange(updatedEdges);
-    },
-    [initialEdges, onEdgesChange, setEdges],
-  );
-
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const workflowNode = initialNodes.find((n) => n.id === node.id);
-      if (workflowNode) {
-        setSelectedNode(workflowNode);
-        setShowPropertyPanel(true);
-      }
+      setSelectedNode(node as WorkflowNode);
+      setShowPropertyPanel(true);
     },
-    [initialNodes],
-  );
-
-  const onDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-
-      const reactFlowBounds = (event.target as Element).getBoundingClientRect();
-      const type = event.dataTransfer.getData("application/reactflow");
-
-      if (typeof type === "undefined" || !type) {
-        return;
-      }
-
-      const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      };
-
-      const nodeType = nodeTypes.find((n) => n.id === type);
-      if (!nodeType) return;
-
-      const newNode: WorkflowNode = {
-        id: `${type}-${Date.now()}`,
-        type,
-        position,
-        data: {
-          label: nodeType.name,
-          description: nodeType.description,
-          category: nodeType.category,
-          config: { ...nodeType.config },
-        },
-      };
-
-      const reactFlowNode: Node = {
-        id: newNode.id,
-        type: newNode.type,
-        position: newNode.position,
-        data: newNode.data,
-      };
-
-      setNodes((nds) => nds.concat(reactFlowNode));
-      onNodesChange([...initialNodes, newNode]);
-    },
-    [initialNodes, onNodesChange, setNodes],
+    [],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -158,119 +64,90 @@ export function WorkflowCanvas({
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+
+      if (!reactFlowInstance || !reactFlowWrapper.current) {
+        return;
+      }
+
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      if (typeof type === 'undefined' || !type) {
+        return;
+      }
+
+      const position = reactFlowInstance.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+
+      const nodeTypeData = nodeTypes.find((n) => n.id === type);
+      if (!nodeTypeData) return;
+
+      const newNode: Node = {
+        id: `${type}-${Date.now()}`,
+        type,
+        position,
+        data: {
+          label: nodeTypeData.name,
+          description: nodeTypeData.description,
+          category: nodeTypeData.category,
+          config: { ...nodeTypeData.config },
+        },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [reactFlowInstance, setNodes]
+  );
+
   const onPropertySave = useCallback(
     (nodeId: string, data: any) => {
-      const updatedNodes = initialNodes.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...data } }
-          : node,
-      );
-
-      setNodes((nds) =>
-        nds.map((node) =>
-          node.id === nodeId
-            ? { ...node, data: { ...node.data, ...data } }
-            : node,
-        ),
-      );
-
-      onNodesChange(updatedNodes);
-    },
-    [initialNodes, onNodesChange, setNodes],
+        setNodes((nds) =>
+            nds.map((node) =>
+                node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
+            )
+        );
+    }, [setNodes]
   );
 
   return (
-    <div
-      className="flex-1 flex flex-col bg-light-grey"
-      data-testid="workflow-canvas"
-    >
-      {/* Top Bar */}
-      <div className="bg-white border-b border-border-light p-4 flex items-center justify-between shadow-sm">
-        <div className="flex items-center space-x-4">
-          <h2
-            className="text-lg font-semibold text-text-dark"
-            data-testid="text-workflow-name"
-          >
-            {workflowName}
-          </h2>
-          <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-            Active
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <div className="text-sm text-gray-500">
-            Auto-save: <span className="text-green-600">On</span>
-          </div>
-          <Button variant="ghost" size="sm" data-testid="button-settings">
-            <Settings className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm" data-testid="button-share">
-            <Share2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Canvas */}
-      <div className="flex-1 relative" style={{ overflow: "hidden" }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={(changes) => {
-            // Filter out unwanted position changes that snap nodes to top-left
-            const filteredChanges = changes.filter(change => {
-              if (change.type === 'position' && change.position) {
-                // Only allow position changes that aren't moving nodes to (0,0)
-                return !(change.position.x === 0 && change.position.y === 0);
-              }
-              return true;
-            });
-            onNodesChangeInternal(filteredChanges);
-          }}
-          onEdgesChange={onEdgesChangeInternal}
-          onConnect={onConnect}
-          onNodeClick={onNodeClick}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          nodeTypes={customNodeTypes}
-          fitView
-          attributionPosition="bottom-left"
-          preventScrolling={false}
-          panOnScroll={true}
-          selectNodesOnDrag={false}
-          snapToGrid={false}
-          nodesDraggable={true}
-          nodesConnectable={true}
-          elementsSelectable={true}
-          nodeDragThreshold={15}
-          multiSelectionKeyCode={null}
-          deleteKeyCode={null}
-          onlyRenderVisibleElements={false}
-        >
-          <Background
-            variant={BackgroundVariant.Dots}
-            gap={20}
-            size={1}
-            color="#E5E7EB"
-          />
-          <Controls
-            className="bg-white border border-border-light shadow-lg"
-            data-testid="canvas-controls"
-          />
-          <Panel position="top-right" className="flex flex-col space-y-2">
-            <div className="bg-white rounded-lg shadow-lg border border-border-light p-3">
-              <div className="text-xs text-gray-500 text-center">100%</div>
-            </div>
-          </Panel>
-        </ReactFlow>
-
-        <PropertyPanel
+    <div className="flex-1 w-full h-full bg-light-grey" ref={reactFlowWrapper} data-testid="workflow-canvas">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onInit={setReactFlowInstance}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onNodeClick={onNodeClick}
+        nodeTypes={customNodeTypes}
+        fitView
+        className="canvas-grid"
+      >
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          color="hsl(210 18% 87%)"
+        />
+        <Controls
+          className="bg-white border border-border-light shadow-lg"
+          data-testid="canvas-controls"
+        />
+      </ReactFlow>
+      <PropertyPanel
           node={selectedNode}
           isOpen={showPropertyPanel}
           onClose={() => setShowPropertyPanel(false)}
           onSave={onPropertySave}
         />
-      </div>
     </div>
   );
 }
+

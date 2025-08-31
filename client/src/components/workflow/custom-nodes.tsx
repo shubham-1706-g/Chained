@@ -1,5 +1,4 @@
 import { Handle, Position } from 'reactflow';
-import { useState, useCallback } from 'react';
 import { nodeTypes } from '../../types/workflow';
 
 interface CustomNodeProps {
@@ -27,21 +26,16 @@ export function CustomWorkflowNode({ data, type, selected }: CustomNodeProps) {
         selected ? 'border-coral ring-2 ring-coral' : 'border-border-light'
       }`}
       data-testid={`workflow-node-${type}`}
+      style={{ position: 'relative' }} /* Add position relative to fix node positioning */
     >
-      {/* Add a drag handle area - only this area will be draggable */}
-      <div 
-        className="drag-handle w-full h-2 absolute top-0 left-0 cursor-move"
-        style={{ background: 'transparent' }}
-      />
-      
-      {/* Node content area - not draggable */}
-      <div className="nodrag relative z-10">
+      <div className="relative">
         {showInputHandle && (
           <Handle
             type="target"
             position={Position.Left}
             className="react-flow__handle"
             data-testid={`handle-input-${type}`}
+            style={{ zIndex: 20 }} /* Increase z-index to ensure handle is clickable */
           />
         )}
         
@@ -72,6 +66,7 @@ export function CustomWorkflowNode({ data, type, selected }: CustomNodeProps) {
             position={Position.Right}
             className="react-flow__handle"
             data-testid={`handle-output-${type}`}
+            style={{ zIndex: 20 }} /* Increase z-index to ensure handle is clickable */
           />
         )}
       </div>

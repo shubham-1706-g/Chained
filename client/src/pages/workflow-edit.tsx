@@ -1,14 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRoute, Link } from "wouter";
+import { useRoute } from "wouter";
 import { WorkflowSidebar } from "@/components/workflow/sidebar";
+import { WorkflowHeader } from "@/components/workflow/header";
 import { WorkflowCanvas } from "@/components/workflow/canvas";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Workflow, WorkflowNode, WorkflowEdge } from "@shared/schema";
-import { ExecutionStatus } from "../types/workflow";
+import { Workflow } from "@shared/schema";
+import { 
+    Node, 
+    Edge, 
+    OnNodesChange, 
+    OnEdgesChange, 
+    applyNodeChanges, 
+    applyEdgeChanges, 
+    OnConnect,
+    addEdge,
+    Connection
+} from "reactflow";
+import { nodeTypes } from "../types/workflow";
+
 
 export default function WorkflowEditPage() {
   const { toast } = useToast();
@@ -16,11 +27,23 @@ export default function WorkflowEditPage() {
   const [match, params] = useRoute("/flows/:id/edit");
   const workflowId = params?.id;
   
-  const [executionStatus, setExecutionStatus] = useState<ExecutionStatus>({
-    status: 'idle'
-  });
-  const [workflowNodes, setWorkflowNodes] = useState<WorkflowNode[]>([]);
-  const [workflowEdges, setWorkflowEdges] = useState<WorkflowEdge[]>([]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
+  
+  const onConnect: OnConnect = useCallback(
+    (connection: Connection) => setEdges((eds) => addEdge({ ...connection, type: 'smoothstep' }, eds)),
+    [setEdges],
+  );
 
   // Fetch workflow
   const { data: workflow, isLoading } = useQuery<Workflow>({
@@ -28,98 +51,41 @@ export default function WorkflowEditPage() {
     enabled: !!workflowId,
   });
 
-  // Load workflow data
+  // Load workflow data into React Flow state
   useEffect(() => {
     if (workflow) {
-      setWorkflowNodes(workflow.nodes);
-      setWorkflowEdges(workflow.edges);
+      const flowNodes = workflow.nodes.map(n => ({...n, position: {x: n.position.x || 0, y: n.position.y || 0}}));
+      setNodes(flowNodes);
+      setEdges(workflow.edges);
     }
   }, [workflow]);
-
-  // Execute workflow mutation
-  const executeMutation = useMutation({
-    mutationFn: async (workflowId: string) => {
-      const response = await apiRequest('POST', `/api/workflows/${workflowId}/execute`);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setExecutionStatus({
-        status: 'running',
-        lastExecution: new Date(),
-        message: data.message
-      });
-      
-      setTimeout(() => {
-        setExecutionStatus(prev => ({
-          ...prev,
-          status: 'completed',
-          message: 'Workflow execution completed successfully'
-        }));
-      }, 3000);
-      
-      toast({
-        title: "Workflow Started",
-        description: "Your workflow is now running.",
-      });
-    },
-    onError: () => {
-      setExecutionStatus(prev => ({
-        ...prev,
-        status: 'error',
-        message: 'Failed to execute workflow'
-      }));
-      
-      toast({
-        title: "Error",
-        description: "Failed to execute workflow.",
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Pause workflow mutation
-  const pauseMutation = useMutation({
-    mutationFn: async (workflowId: string) => {
-      const response = await apiRequest('POST', `/api/workflows/${workflowId}/pause`);
-      return response.json();
-    },
-    onSuccess: () => {
-      setExecutionStatus(prev => ({ ...prev, status: 'paused' }));
-      toast({
-        title: "Workflow Paused",
-        description: "Your workflow has been paused.",
-      });
-    }
-  });
-
-  // Stop workflow mutation
-  const stopMutation = useMutation({
-    mutationFn: async (workflowId: string) => {
-      const response = await apiRequest('POST', `/api/workflows/${workflowId}/stop`);
-      return response.json();
-    },
-    onSuccess: () => {
-      setExecutionStatus(prev => ({ ...prev, status: 'stopped' }));
-      toast({
-        title: "Workflow Stopped",
-        description: "Your workflow has been stopped.",
-      });
-    }
-  });
 
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
     mutationFn: async () => {
       if (!workflowId) return;
       
-      const response = await apiRequest('PUT', `/api/workflows/${workflowId}`, {
-        nodes: workflowNodes,
-        edges: workflowEdges
-      });
+      const payload: Partial<Workflow> = {
+          nodes: nodes.map(({id, type, position, data}) => ({ 
+              id, 
+              type: type!, 
+              position, 
+              data
+          })),
+          edges: edges.map(edge => ({
+              id: edge.id,
+              source: edge.source,
+              target: edge.target,
+              sourceHandle: edge.sourceHandle || undefined,
+              targetHandle: edge.targetHandle || undefined,
+          })),
+      }
+      const response = await apiRequest('PUT', `/api/workflows/${workflowId}`, payload);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/workflows'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/workflows', workflowId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/workflows']});
       toast({
         title: "Workflow Saved",
         description: "Your workflow has been saved successfully.",
@@ -136,39 +102,24 @@ export default function WorkflowEditPage() {
 
   const handleExecute = () => {
     if (workflowId) {
-      executeMutation.mutate(workflowId);
+      toast({ title: "Execute Clicked", description: "Execute functionality would be implemented here."});
     }
   };
 
   const handlePause = () => {
     if (workflowId) {
-      pauseMutation.mutate(workflowId);
+      toast({ title: "Pause Clicked", description: "Pause functionality would be implemented here."});
     }
   };
 
   const handleStop = () => {
     if (workflowId) {
-      stopMutation.mutate(workflowId);
+      toast({ title: "Stop Clicked", description: "Stop functionality would be implemented here."});
     }
   };
 
   const handleSave = () => {
     saveWorkflowMutation.mutate();
-  };
-
-  const handleLoad = () => {
-    toast({
-      title: "Load Workflow",
-      description: "Load workflow functionality would be implemented here.",
-    });
-  };
-
-  const handleNodesChange = (nodes: WorkflowNode[]) => {
-    setWorkflowNodes(nodes);
-  };
-
-  const handleEdgesChange = (edges: WorkflowEdge[]) => {
-    setWorkflowEdges(edges);
   };
 
   if (isLoading) {
@@ -188,24 +139,27 @@ export default function WorkflowEditPage() {
   }
 
   return (
-    <div className="h-screen flex font-inter overflow-hidden workflow-canvas" data-testid="workflow-edit-page">
-      <WorkflowSidebar
-        workflowName={workflow.name}
-        executionStatus={executionStatus}
-        onExecute={handleExecute}
-        onPause={handlePause}
-        onStop={handleStop}
-        onSave={handleSave}
-        onLoad={handleLoad}
-      />
-      
-      <WorkflowCanvas
-        workflowName={workflow.name}
-        initialNodes={workflowNodes}
-        initialEdges={workflowEdges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
-      />
+    <div className="h-screen flex font-inter overflow-hidden" data-testid="workflow-edit-page">
+      <WorkflowSidebar />
+      <div className="flex-1 flex flex-col h-full">
+        <WorkflowHeader
+          workflowName={workflow.name}
+          onExecute={handleExecute}
+          onPause={handlePause}
+          onStop={handleStop}
+          onSave={handleSave}
+        />
+        <WorkflowCanvas
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          setNodes={setNodes}
+          setEdges={setEdges}
+        />
+      </div>
     </div>
   );
 }
+

@@ -68,9 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!workflow) {
         return res.status(404).json({ message: "Workflow not found" });
       }
-      
+
       // Mock execution - in a real implementation, this would trigger the workflow engine
-      res.json({ 
+      res.json({
         message: "Workflow execution started",
         executionId: `exec_${Date.now()}`,
         status: "running"
@@ -93,6 +93,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Workflow stopped", status: "stopped" });
     } catch (error) {
       res.status(500).json({ message: "Failed to stop workflow" });
+    }
+  });
+
+  app.post("/api/workflows", async (req, res) => {
+    try {
+      const workflows = await storage.getWorkflows();
+      res.json(workflows);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workflows" });
     }
   });
 
