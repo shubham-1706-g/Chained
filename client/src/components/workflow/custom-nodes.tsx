@@ -26,7 +26,6 @@ export function CustomWorkflowNode({ data, type, selected }: CustomNodeProps) {
         selected ? 'border-coral ring-2 ring-coral' : 'border-border-light'
       }`}
       data-testid={`workflow-node-${type}`}
-      style={{ position: 'relative' }} /* Add position relative to fix node positioning */
     >
       <div className="relative">
         {showInputHandle && (
