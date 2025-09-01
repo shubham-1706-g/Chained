@@ -1,0 +1,58 @@
+# FlowForge Python API - No Rust Dependencies
+# Use this file if you encounter Rust compilation errors
+
+# Core FastAPI dependencies (older versions that don't require Rust)
+fastapi==0.95.2
+uvicorn[standard]==0.21.1
+pydantic==1.10.12  # Older version compatible with more systems
+python-multipart==0.0.5
+
+# HTTP and async networking
+aiohttp==3.8.4
+httpx==0.24.1
+
+# Scheduling and time handling
+schedule==1.1.0
+
+# Data validation and serialization
+email-validator==1.3.1
+
+# Logging and utilities
+loguru==0.6.0
+
+# Security and cryptography (for future use)
+cryptography==39.0.1
+bcrypt==4.0.1
+
+# Optional: OpenAI integration (uncomment if using OpenAI actions)
+# openai==0.28.1
+
+# Optional: Google integrations (uncomment if using Gmail triggers)
+# google-api-python-client==2.70.0
+# google-auth-oauthlib==1.0.0
+
+# Optional: Telegram integration (uncomment if using Telegram triggers)
+# python-telegram-bot==20.0a6
+
+# Optional: Slack integration (uncomment if using Slack triggers)
+# slack-sdk==3.19.0
+
+# Optional: Database integrations (uncomment based on your database choice)
+# asyncpg==0.27.0  # PostgreSQL
+# aiomysql==0.1.1  # MySQL
+# motor==3.1.1     # MongoDB
+
+# Optional: Redis for caching and sessions (uncomment if using Redis)
+# redis==4.4.4
+# aioredis==2.0.1
+
+# Development and testing dependencies
+pytest==7.2.2
+pytest-asyncio==0.21.0
+requests==2.28.2  # For testing (older version)
+
+# Code quality and linting (optional)
+# black==22.12.0
+# isort==5.11.5
+# flake8==5.0.4
+# mypy==0.991

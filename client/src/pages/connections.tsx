@@ -106,7 +106,7 @@ export default function ConnectionsPage() {
 
       {/* Connection Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-coral hover:shadow-lg transition-all duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Total Connections</CardTitle>
             <Plug className="h-4 w-4 text-coral" />
@@ -119,7 +119,7 @@ export default function ConnectionsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-green-500 hover:shadow-lg transition-all duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Active Connections</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -134,7 +134,7 @@ export default function ConnectionsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-gray-200 hover:border-red-500 hover:shadow-lg transition-all duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Issues</CardTitle>
             <AlertCircle className="h-4 w-4 text-red-600" />
@@ -200,15 +200,23 @@ export default function ConnectionsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {['Gmail', 'Slack', 'Webhook', 'Database'].map((service) => (
-              <Card key={service} className="cursor-pointer hover:shadow-md transition-shadow border-dashed border-2 border-gray-300">
+            {[
+              { name: 'Gmail', icon: 'fas fa-envelope', color: 'bg-red-500', gradient: 'from-red-50 to-white', border: 'border-red-200', hover: 'hover:border-red-500' },
+              { name: 'Slack', icon: 'fab fa-slack', color: 'bg-purple-500', gradient: 'from-purple-50 to-white', border: 'border-purple-200', hover: 'hover:border-purple-500' },
+              { name: 'Webhook', icon: 'fas fa-globe', color: 'bg-blue-500', gradient: 'from-blue-50 to-white', border: 'border-blue-200', hover: 'hover:border-blue-500' },
+              { name: 'Database', icon: 'fas fa-database', color: 'bg-green-500', gradient: 'from-green-50 to-white', border: 'border-green-200', hover: 'hover:border-green-500' }
+            ].map((service) => (
+              <Card key={service.name} className={`cursor-pointer bg-gradient-to-br ${service.gradient} border-2 ${service.border} ${service.hover} hover:shadow-lg hover:scale-[1.02] transition-all duration-200`}>
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Plug className="w-6 h-6 text-white" />
+                    <div className={`w-14 h-14 ${service.color} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                      <i className={`${service.icon} text-white text-lg`}></i>
                     </div>
-                    <h3 className="font-semibold text-text-dark mb-1">{service}</h3>
-                    <p className="text-sm text-gray-500">Connect to {service}</p>
+                    <h3 className="font-semibold text-text-dark mb-2">{service.name}</h3>
+                    <p className="text-sm text-gray-600">Connect to {service.name}</p>
+                    <div className="mt-3 text-xs font-medium" style={{color: service.color.replace('bg-', '').replace('-500', '')}}>
+                      Quick Setup →
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -243,25 +251,30 @@ export default function ConnectionsPage() {
           </Card>
         ) : (
           filteredConnections.map((connection) => (
-            <Card key={connection.id} className="hover:shadow-md transition-shadow">
+            <Card key={connection.id} className="border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 ${connection.color} rounded-lg flex items-center justify-center`}>
-                      <i className={`${connection.icon} text-white`}></i>
+                    <div className={`w-14 h-14 ${connection.color} rounded-xl flex items-center justify-center shadow-sm`}>
+                      <i className={`${connection.icon} text-white text-lg`}></i>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-text-dark">{connection.name}</h3>
+                      <h3 className="text-lg font-semibold text-text-dark hover:text-coral transition-colors cursor-pointer">{connection.name}</h3>
                       <p className="text-gray-500 text-sm">{connection.description}</p>
                       <div className="flex items-center space-x-4 mt-2">
                         <Badge 
                           variant={connection.status === 'connected' ? "default" : 
                                  connection.status === 'error' ? "destructive" : "secondary"}
+                          className={
+                            connection.status === 'connected' ? "bg-green-100 text-green-800 border-2 border-green-200 hover:bg-green-200 hover:border-green-400 transition-all duration-200" :
+                            connection.status === 'error' ? "bg-red-100 text-red-800 border-2 border-red-200 hover:bg-red-200 hover:border-red-400 transition-all duration-200" :
+                            "bg-gray-100 text-gray-800 border-2 border-gray-200 hover:bg-gray-200 hover:border-gray-400 transition-all duration-200"
+                          }
                         >
                           {connection.status === 'connected' ? 'Connected' : 
                            connection.status === 'error' ? 'Error' : 'Disconnected'}
                         </Badge>
-                        <span className="text-xs text-gray-400 capitalize">
+                        <span className="text-xs text-gray-600 capitalize bg-gray-100 border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-200 px-2 py-1 rounded transition-all duration-200">
                           {connection.type}
                         </span>
                         <span className="text-xs text-gray-400">
@@ -273,27 +286,40 @@ export default function ConnectionsPage() {
                   
                   <div className="flex items-center space-x-2">
                     {connection.status === 'connected' && (
-                      <div className="flex items-center space-x-2 text-green-600">
+                      <div className="flex items-center space-x-2 text-green-600 bg-green-50 border-2 border-green-200 hover:border-green-400 px-3 py-1 rounded-lg transition-all duration-200">
                         <CheckCircle className="w-4 h-4" />
                         <span className="text-sm font-medium">Active</span>
                       </div>
                     )}
                     
                     {connection.status === 'error' && (
-                      <Button variant="outline" size="sm" className="text-red-600 border-red-600 hover:bg-red-50">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-2 border-red-200 text-red-600 hover:border-red-500 hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+                      >
                         Fix Issue
                       </Button>
                     )}
                     
                     {connection.status === 'disconnected' && (
-                      <Button variant="outline" size="sm" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-2 border-blue-200 text-blue-600 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
+                      >
                         Reconnect
                       </Button>
                     )}
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" data-testid={`button-more-${connection.id}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                          data-testid={`button-more-${connection.id}`}
+                        >
                           <Settings className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -310,7 +336,7 @@ export default function ConnectionsPage() {
                           <Settings className="w-4 h-4 mr-2" />
                           Settings
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem className="text-red-600 hover:bg-red-50 focus:bg-red-50 hover:text-red-700 focus:text-red-700">
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete
                         </DropdownMenuItem>

@@ -1,6 +1,11 @@
+# Node / frontend
 node_modules
 dist
 .DS_Store
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Python inside python api
+python api/.venv/
+python api/**/__pycache__/

@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRoute } from "wouter";
-import { WorkflowSidebar } from "@/components/workflow/sidebar";
 import { WorkflowHeader } from "@/components/workflow/header";
 import { WorkflowCanvas } from "@/components/workflow/canvas";
+import { NodeLibrary } from "@/components/workflow/node-library";
+import { NodeLibraryToggle } from "@/components/workflow/node-library-toggle";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Workflow } from "@shared/schema";
@@ -16,9 +17,9 @@ import {
     applyEdgeChanges, 
     OnConnect,
     addEdge,
-    Connection
+    Connection,
+    ReactFlowProvider
 } from "reactflow";
-import { nodeTypes } from "../types/workflow";
 
 
 export default function WorkflowEditPage() {
@@ -29,6 +30,7 @@ export default function WorkflowEditPage() {
   
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [isNodeLibraryOpen, setIsNodeLibraryOpen] = useState(true);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -122,6 +124,10 @@ export default function WorkflowEditPage() {
     saveWorkflowMutation.mutate();
   };
 
+  const handleToggleNodeLibrary = () => {
+    setIsNodeLibraryOpen(!isNodeLibraryOpen);
+  };
+
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -139,27 +145,47 @@ export default function WorkflowEditPage() {
   }
 
   return (
-    <div className="h-screen flex font-inter overflow-hidden" data-testid="workflow-edit-page">
-      <WorkflowSidebar />
-      <div className="flex-1 flex flex-col h-full">
-        <WorkflowHeader
-          workflowName={workflow.name}
-          onExecute={handleExecute}
-          onPause={handlePause}
-          onStop={handleStop}
-          onSave={handleSave}
-        />
-        <WorkflowCanvas
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          setNodes={setNodes}
-          setEdges={setEdges}
-        />
+    <div className="h-screen flex flex-col font-inter" data-testid="workflow-edit-page" style={{ overflow: 'visible' }}>
+      {/* Header - Full Width */}
+      <WorkflowHeader
+        workflowName={workflow.name}
+        onExecute={handleExecute}
+        onPause={handlePause}
+        onStop={handleStop}
+        onSave={handleSave}
+      />
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex relative" style={{ overflow: 'visible' }}>
+        {/* Node Library Sidebar */}
+        <div className={`transition-all duration-300 ease-in-out ${isNodeLibraryOpen ? 'w-96' : 'w-0'}`}>
+          <NodeLibrary 
+            nodes={nodes} 
+            isOpen={isNodeLibraryOpen}
+            onClose={() => setIsNodeLibraryOpen(false)}
+          />
+        </div>
+        
+        {/* Canvas Area */}
+        <div className="flex-1 relative" style={{ overflow: 'visible' }}>
+          {/* Node Library Toggle Button */}
+          {!isNodeLibraryOpen && (
+            <NodeLibraryToggle onOpen={() => setIsNodeLibraryOpen(true)} />
+          )}
+          
+          <ReactFlowProvider>
+            <WorkflowCanvas
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              setNodes={setNodes}
+              setEdges={setEdges}
+            />
+          </ReactFlowProvider>
+        </div>
       </div>
     </div>
   );
 }
-

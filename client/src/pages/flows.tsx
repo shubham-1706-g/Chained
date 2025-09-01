@@ -91,42 +91,45 @@ export default function FlowsPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link href="/flows/create?template=webhook">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow border-dashed border-2 border-coral">
+              <Card className="cursor-pointer bg-gradient-to-br from-coral-50 to-white border-2 border-coral-200 hover:border-coral hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-coral rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Workflow className="w-6 h-6 text-white" />
+                    <div className="w-14 h-14 bg-coral rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <Workflow className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="font-semibold text-text-dark mb-1">Webhook Trigger</h3>
-                    <p className="text-sm text-gray-500">Start with HTTP webhook</p>
+                    <h3 className="font-semibold text-text-dark mb-2">Webhook Trigger</h3>
+                    <p className="text-sm text-gray-600">Start with HTTP webhook</p>
+                    <div className="mt-3 text-xs text-coral font-medium">Quick Setup →</div>
                   </div>
                 </CardContent>
               </Card>
             </Link>
 
             <Link href="/flows/create?template=schedule">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow border-dashed border-2 border-slate-blue">
+              <Card className="cursor-pointer bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 hover:border-blue-500 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-slate-blue rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Workflow className="w-6 h-6 text-white" />
+                    <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <Workflow className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="font-semibold text-text-dark mb-1">Scheduled Flow</h3>
-                    <p className="text-sm text-gray-500">Run on schedule</p>
+                    <h3 className="font-semibold text-text-dark mb-2">Scheduled Flow</h3>
+                    <p className="text-sm text-gray-600">Run on schedule</p>
+                    <div className="mt-3 text-xs text-blue-600 font-medium">Quick Setup →</div>
                   </div>
                 </CardContent>
               </Card>
             </Link>
 
             <Link href="/flows/create?template=blank">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow border-dashed border-2 border-gray-300">
+              <Card className="cursor-pointer bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 hover:border-gray-400 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Plus className="w-6 h-6 text-white" />
+                    <div className="w-14 h-14 bg-gray-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <Plus className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="font-semibold text-text-dark mb-1">Blank Flow</h3>
-                    <p className="text-sm text-gray-500">Start from scratch</p>
+                    <h3 className="font-semibold text-text-dark mb-2">Blank Flow</h3>
+                    <p className="text-sm text-gray-600">Start from scratch</p>
+                    <div className="mt-3 text-xs text-gray-600 font-medium">Custom Build →</div>
                   </div>
                 </CardContent>
               </Card>
@@ -163,24 +166,29 @@ export default function FlowsPage() {
           </Card>
         ) : (
           filteredWorkflows.map((workflow) => (
-            <Card key={workflow.id} className="hover:shadow-md transition-shadow">
+            <Card key={workflow.id} className="border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-coral rounded-lg flex items-center justify-center">
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center shadow-sm ${
+                      workflow.isActive ? 'bg-green-500' : 'bg-gray-400'
+                    }`}>
                       <Workflow className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-text-dark">{workflow.name}</h3>
+                      <h3 className="text-lg font-semibold text-text-dark hover:text-coral transition-colors cursor-pointer">{workflow.name}</h3>
                       <p className="text-gray-500 text-sm">{workflow.description}</p>
                       <div className="flex items-center space-x-4 mt-2">
-                        <Badge variant={workflow.isActive ? "default" : "secondary"}>
+                        <Badge 
+                          variant={workflow.isActive ? "default" : "secondary"}
+                          className={workflow.isActive ? "bg-green-100 text-green-800 hover:bg-green-200" : ""}
+                        >
                           {workflow.isActive ? "Active" : "Inactive"}
                         </Badge>
                         <span className="text-xs text-gray-400">
                           Updated {workflow.updatedAt ? new Date(workflow.updatedAt).toLocaleDateString() : 'recently'}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
                           {workflow.nodes?.length || 0} nodes
                         </span>
                       </div>
@@ -189,19 +197,34 @@ export default function FlowsPage() {
                   
                   <div className="flex items-center space-x-2">
                     <Link href={`/flows/${workflow.id}/dashboard`}>
-                      <Button variant="outline" size="sm" data-testid={`button-dashboard-${workflow.id}`}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
+                        data-testid={`button-dashboard-${workflow.id}`}
+                      >
                         Dashboard
                       </Button>
                     </Link>
                     <Link href={`/flows/${workflow.id}/edit`}>
-                      <Button variant="outline" size="sm" data-testid={`button-edit-${workflow.id}`}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-2 border-gray-200 hover:border-coral hover:bg-coral-50 hover:text-coral transition-all duration-200"
+                        data-testid={`button-edit-${workflow.id}`}
+                      >
                         Edit
                       </Button>
                     </Link>
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" data-testid={`button-more-${workflow.id}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                          data-testid={`button-more-${workflow.id}`}
+                        >
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -218,7 +241,7 @@ export default function FlowsPage() {
                           <Settings className="w-4 h-4 mr-2" />
                           Settings
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem className="text-red-600 hover:bg-red-50 focus:bg-red-50 hover:text-red-700 focus:text-red-700">
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete
                         </DropdownMenuItem>

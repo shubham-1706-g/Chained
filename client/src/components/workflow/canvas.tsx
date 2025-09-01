@@ -11,7 +11,10 @@ import ReactFlow, {
   OnEdgesChange,
   OnConnect,
   applyEdgeChanges,
-  applyNodeChanges
+  applyNodeChanges,
+  ConnectionLineType,
+  Connection,
+  addEdge
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -37,19 +40,23 @@ export function WorkflowCanvas({
   onEdgesChange,
   onConnect,
   setNodes,
+  setEdges,
 }: WorkflowCanvasProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
   const [showPropertyPanel, setShowPropertyPanel] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const customNodeTypes = useMemo(() => {
     const types: Record<string, React.ComponentType<any>> = {};
     nodeTypes.forEach((nodeType) => {
-      types[nodeType.id] = CustomWorkflowNode;
+      types[nodeType.id] = (props: any) => (
+        <CustomWorkflowNode {...props} dragging={isDragging} />
+      );
     });
     return types;
-  }, []);
+  }, [isDragging]);
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -62,11 +69,17 @@ export function WorkflowCanvas({
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+    setIsDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback(() => {
+    setIsDragging(false);
   }, []);
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      setIsDragging(false);
 
       if (!reactFlowInstance || !reactFlowWrapper.current) {
         return;
@@ -114,21 +127,60 @@ export function WorkflowCanvas({
     }, [setNodes]
   );
 
+  const handleConnect = useCallback(
+    (params: Connection) => {
+      const newEdge = addEdge({ ...params, type: 'smoothstep' }, edges);
+      setEdges(newEdge);
+    },
+    [edges, setEdges]
+  );
+
   return (
-    <div className="flex-1 w-full h-full bg-light-grey" ref={reactFlowWrapper} data-testid="workflow-canvas">
+    <div 
+      className="flex-1 w-full h-full bg-light-grey relative" 
+      ref={reactFlowWrapper} 
+      data-testid="workflow-canvas"
+      style={{ 
+        position: 'relative',
+        overflow: 'visible',
+        zIndex: 1
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        onConnect={handleConnect}
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
         onNodeClick={onNodeClick}
         nodeTypes={customNodeTypes}
         fitView
         className="canvas-grid"
+        connectionLineType={ConnectionLineType.SmoothStep}
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          animated: false,
+          style: { 
+            strokeWidth: 2, 
+            stroke: 'hsl(248 53% 67%)',
+            strokeDasharray: '5,5'
+          }
+        }}
+        attributionPosition="bottom-left"
+        proOptions={{ hideAttribution: true }}
+        panOnDrag={true}
+        panOnScroll={false}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
+        preventScrolling={true}
+        nodesDraggable={true}
+        nodesConnectable={true}
+        elementsSelectable={true}
       >
         <Background
           variant={BackgroundVariant.Dots}
@@ -137,16 +189,17 @@ export function WorkflowCanvas({
           color="hsl(210 18% 87%)"
         />
         <Controls
-          className="bg-white border border-border-light shadow-lg"
+          className="bg-white border-2 border-gray-200 shadow-lg rounded-lg p-1"
           data-testid="canvas-controls"
         />
       </ReactFlow>
+      
       <PropertyPanel
-          node={selectedNode}
-          isOpen={showPropertyPanel}
-          onClose={() => setShowPropertyPanel(false)}
-          onSave={onPropertySave}
-        />
+        node={selectedNode}
+        isOpen={showPropertyPanel}
+        onClose={() => setShowPropertyPanel(false)}
+        onSave={onPropertySave}
+      />
     </div>
   );
 }

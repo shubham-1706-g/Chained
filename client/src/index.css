@@ -115,15 +115,27 @@ body, html {
 .react-flow__node.dragging * {
   pointer-events: none;
   transition: none !important;
+  z-index: 1000 !important;
 }
 
 /* Additional performance optimizations for workflow canvas */
 .react-flow__pane {
   cursor: grab;
+  z-index: 1;
 }
 
 .react-flow__pane.dragging {
   cursor: grabbing;
+}
+
+/* Ensure viewport doesn't clip nodes */
+.react-flow__viewport {
+  overflow: visible !important;
+}
+
+/* Ensure renderer allows overflow */
+.react-flow__renderer {
+  overflow: visible !important;
 }
 
 /* Optimize scrolling in workflow areas */
@@ -132,29 +144,25 @@ body, html {
   scroll-behavior: auto !important;
 }
 
-/* Smooth node interactions without lag */
-.react-flow__node:hover {
-  transform: none !important;
-  transition: none !important;
-}
-
-/* Ensure canvas container doesn't interfere with scrolling */
+/* Ensure canvas container allows nodes to be visible outside bounds */
 .react-flow__container {
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Improve node click detection vs drag behavior */
 .react-flow__node {
-  cursor: pointer;
+  cursor: grab;
   user-select: none;
+  z-index: 10;
 }
 
 .react-flow__node:hover {
-  cursor: pointer;
+  cursor: grab;
 }
 
 .react-flow__node.dragging {
   cursor: grabbing !important;
+  z-index: 1000 !important;
 }
 
 /* Node content should not trigger drag */
@@ -176,6 +184,28 @@ body, html {
 .react-flow__node .drag-handle:hover {
   cursor: move;
   background: rgba(255, 109, 90, 0.1) !important;
+}
+
+/* Ensure proper canvas panning behavior */
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+/* Ensure handles are properly clickable */
+.react-flow__handle {
+  cursor: crosshair;
+  pointer-events: all;
+  z-index: 15;
+}
+
+.react-flow__handle:hover {
+  cursor: crosshair;
+  background: hsl(248 53% 67%) !important;
+  border-color: white !important;
 }
 
 /* Ensure node handles are easily clickable */
@@ -201,16 +231,24 @@ body, html {
 
 /* Switch/Toggle enhanced styles */
 [data-state="checked"] {
-  @apply border-coral;
+  /* Removed border-coral to prevent orange border on switches */
 }
 
 [data-state="unchecked"] {
-  @apply border-2 border-gray-300;
+  /* Removed custom border styling to use default switch styles */
 }
 
-/* Input and form element enhancements */
-.form-control, input, select, textarea {
-  @apply border-2 border-gray-200 focus:border-coral transition-all duration-200;
+/* Modern form design system */
+.form-element-base {
+  @apply border border-gray-200 bg-white rounded-lg transition-all duration-200 ease-in-out;
+}
+
+.form-element-focus {
+  @apply border-coral-400 ring-2 ring-coral-100 outline-none;
+}
+
+.form-element-hover {
+  @apply border-gray-300;
 }
 
 /* Card hover effects */
@@ -284,11 +322,11 @@ body, html {
 }
 
 .workflow-node {
-  /* transition: box-shadow 0.2s ease; */
+  transition: box-shadow 0.2s ease;
 }
 
 .workflow-node:hover {
-  /* box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-item:hover {
@@ -307,11 +345,15 @@ body, html {
 /* React Flow customizations */
 .react-flow__node {
   transition: none !important;
-  cursor: move;
+}
+
+.react-flow__node.dragging {
+  z-index: 1000 !important;
 }
 
 .react-flow__edge {
   pointer-events: stroke;
+  z-index: 5;
 }
 
 .react-flow__edge-path {
@@ -320,34 +362,91 @@ body, html {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
+/* Ensure proper edge connection alignment */
+.react-flow__connection-line {
+  stroke: var(--slate-blue);
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+}
+
+/* Ensure connection line paths are properly positioned */
+.react-flow__connectionline {
+  z-index: 1001;
+}
+
+/* Fix any edge positioning issues */
+.react-flow__edges {
+  z-index: 5;
+}
+
+/* Remove any default borders from select items */
+[role="option"] {
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* Ensure card corners are properly visible */
+.card {
+  overflow: visible !important;
+}
+
+.card > * {
+  overflow: visible !important;
+}
+
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
 .react-flow__handle {
-  width: 12px;
-  height: 12px;
   border-radius: 50%;
-  background: var(--slate-blue);
-  border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.react-flow__handle-right {
-  right: -6px;
-}
-
-.react-flow__handle-left {
-  left: -6px;
 }
 
 .react-flow__controls {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-light);
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  padding: 3px;
 }
 
 .react-flow__controls-button {
-  background-color: white;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-dark);
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 4px !important;
+  color: #6b7280 !important;
+  width: 19px !important;
+  height: 19px !important;
+  margin: 1px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
 }
 
 .react-flow__controls-button:hover {
-  background-color: #f9fafb;
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+}
+
+.react-flow__controls-button:active {
+  background: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+.react-flow__controls-button svg {
+  width: 9px !important;
+  height: 9px !important;
+  fill: currentColor !important;
+  color: inherit !important;
 }

@@ -1,0 +1,66 @@
+{
+  "name": "Hello World Workflow",
+  "description": "A simple workflow to get started with FlowForge",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "type": "trigger",
+      "trigger_type": "webhook",
+      "name": "Hello World Webhook",
+      "description": "Receives webhook events",
+      "config": {
+        "webhook_id": "hello-world-webhook",
+        "secret": "your-webhook-secret",
+        "validate_signature": true
+      }
+    },
+    {
+      "id": "http-request",
+      "type": "action",
+      "action_type": "http",
+      "name": "HTTP Request",
+      "description": "Makes an HTTP request to external API",
+      "config": {
+        "method": "GET",
+        "url": "https://httpbin.org/json",
+        "headers": {
+          "User-Agent": "FlowForge-HelloWorld/1.0"
+        },
+        "timeout": 30
+      },
+      "dependencies": ["webhook-trigger"]
+    },
+    {
+      "id": "log-response",
+      "type": "action",
+      "action_type": "data_transform",
+      "name": "Log Response",
+      "description": "Logs the API response",
+      "config": {
+        "transform_type": "add_fields",
+        "fields": {
+          "timestamp": "${timestamp}",
+          "execution_id": "${execution_id}",
+          "response_data": "${previous_outputs.http-request.result.response}"
+        }
+      },
+      "dependencies": ["http-request"]
+    }
+  ],
+  "connections": [
+    {
+      "from": "webhook-trigger",
+      "to": "http-request"
+    },
+    {
+      "from": "http-request",
+      "to": "log-response"
+    }
+  ],
+  "settings": {
+    "timeout": 300,
+    "max_retries": 3,
+    "fail_fast": false
+  }
+}
