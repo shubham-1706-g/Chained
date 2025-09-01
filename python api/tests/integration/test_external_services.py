@@ -622,3 +622,4 @@ class TestIntegrationWorkflows(IntegrationTestBase):
 
         # Verify error information is captured
         assert "error_message" in final_status or "error" in final_status
+

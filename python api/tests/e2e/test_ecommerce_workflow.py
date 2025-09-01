@@ -441,3 +441,4 @@ class TestEcommerceOrderFulfillment(E2ETestBase):
             return {"success": True, "message_id": "mock-email-id"}
 
         return patch('smtplib.SMTP.sendmail', side_effect=mock_email_send)
+

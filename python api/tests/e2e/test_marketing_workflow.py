@@ -559,3 +559,4 @@ class TestMarketingAutomationWorkflow(E2ETestBase):
                 {"from": "welcome-email", "to": "tag-subscriber"}
             ]
         }
+

@@ -504,3 +504,4 @@ class TestCustomerSupportWorkflow(E2ETestBase):
             ],
             "connections": []
         }
+

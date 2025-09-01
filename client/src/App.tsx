@@ -6,6 +6,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider } from "@/contexts/sidebar-context";
 import { MainLayout } from "@/components/layout/main-layout";
 import NotFound from "@/pages/not-found";
+import LoginPage from "@/pages/login";
+import SignupPage from "@/pages/signup";
+import ForgotPasswordPage from "@/pages/forgot-password";
+import VerifyOTPPage from "@/pages/verify-otp";
+import ResetPasswordPage from "@/pages/reset-password";
 import DashboardPage from "@/pages/dashboard";
 import FlowsPage from "@/pages/flows";
 import FlowDashboardPage from "@/pages/flow-dashboard";
@@ -18,6 +23,13 @@ function Router() {
   return (
     <SidebarProvider>
       <Switch>
+        {/* Authentication routes - no sidebar */}
+        <Route path="/login" component={LoginPage} />
+        <Route path="/signup" component={SignupPage} />
+        <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/verify-otp" component={VerifyOTPPage} />
+        <Route path="/reset-password" component={ResetPasswordPage} />
+
         {/* Route with sidebar for create flow */}
         <Route path="/flows/create" component={() => (
           <MainLayout>

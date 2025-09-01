@@ -254,3 +254,4 @@ def get_test_trigger_config(trigger_type: str) -> Dict[str, Any]:
         }
     }
     return configs.get(trigger_type, {})
+
